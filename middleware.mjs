@@ -4,10 +4,10 @@ const globalMiddleware = (req, res, next) => {
   next();
 }
 
-
-const localMiddleware = (req, res, next) => {
-  console.log("local files middleware")
-  next()
+const authMiddleware = (req, res, next) => {
+  console.log("check here for login")
+  res.json({ error: "you are not logged in" })
+  // next()
 }
 
-export { globalMiddleware, localMiddleware }
+export { globalMiddleware, authMiddleware }
