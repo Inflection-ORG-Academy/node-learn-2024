@@ -1,4 +1,5 @@
 import { readFile, writeFile } from 'node:fs/promises'
+import jwt from 'jsonwebtoken'
 
 const registerController = async (req, res, next) => {
   // input check
@@ -40,8 +41,30 @@ const registerController = async (req, res, next) => {
   res.json({ message: "register successful" })
 }
 
-const loginController = (req, res, next) => {
-  res.json({ message: "login not implemented" })
+const loginController = async (req, res, next) => {
+  // validate input
+  if (!req.body.email || !req.body.password) {
+    res.statusCode = 400
+    return res.json({ error: "input is not valid" })
+  }
+
+  // read db in string
+  const fileDataStr = await readFile("./db.json", { encoding: 'utf-8' })
+  // convert db data in json
+  const dbData = JSON.parse(fileDataStr)
+
+  // find user in db
+  const user = dbData.users.filter((e) => { return e.email === req.body.email })[0]
+
+  // match password
+  if (user.password !== req.body.password) {
+    res.statusCode = 400
+    return res.json({ error: "password is wrong" })
+  }
+
+  const token = jwt.sign({ name: user.name, email: user.email }, 'kuguogyfyfvhgyvhuofkygvkiulju', { expiresIn: '1h' });
+
+  res.json({ token, name: user.name, email: user.email })
 }
 
 export { registerController, loginController }
