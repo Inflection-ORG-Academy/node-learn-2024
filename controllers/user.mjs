@@ -62,7 +62,7 @@ const loginController = async (req, res, next) => {
     return res.json({ error: "password is wrong" })
   }
 
-  const token = jwt.sign({ name: user.name, email: user.email }, 'kuguogyfyfvhgyvhuofkygvkiulju', { expiresIn: '1h' });
+  const token = jwt.sign({ name: user.name, email: user.email }, process.env.TOKEN_SECRET, { expiresIn: '1h' });
 
   res.json({ token, name: user.name, email: user.email })
 }

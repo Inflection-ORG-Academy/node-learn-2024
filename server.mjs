@@ -1,10 +1,11 @@
+import 'dotenv/config'
 import express from 'express';
 import { registerController, loginController } from './controllers/user.mjs'
 import { prizeController } from './controllers/prize.mjs'
 import { globalMiddleware, authMiddleware } from './middleware.mjs';
 import { errorController, undefinedRouteHandler } from './error.mjs';
 const server = express();
-const port = 5000
+const port = process.env.PORT || 5000
 
 server.use(express.json())
 
