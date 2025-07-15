@@ -7,7 +7,6 @@ const globalMiddleware = (req, res, next) => {
 }
 
 const authMiddleware = (req, res, next) => {
-
   // check for token is available or not
   if (!req.headers.authorization) {
     res.statusCode = 400
