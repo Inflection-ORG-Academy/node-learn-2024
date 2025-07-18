@@ -3,6 +3,7 @@ import jwt from 'jsonwebtoken'
 import prisma from "../db.mjs"
 import bcrypt from 'bcrypt'
 import * as z from 'zod'
+import { sendEmail } from '../email.mjs'
 
 // input model for user registration
 const UserModel = z.object({
@@ -74,4 +75,14 @@ const loginController = async (req, res, next) => {
   res.json({ token, name: user.name, email: user.email })
 }
 
-export { registerController, loginController }
+
+const forgotPasswordController = async (req, res, next) => {
+  // TODO: check for user in DB
+
+  const x = await sendEmail(req.body.email, "test", "<h3>Banana</h3>")
+  console.log(x)
+
+  res.json({ message: "email sent" })
+}
+
+export { registerController, loginController, forgotPasswordController }
