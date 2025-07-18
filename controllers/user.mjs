@@ -11,7 +11,6 @@ const UserModel = z.object({
   password: z.string().min(8, { message: "Password must be at least 8 characters long" })
 });
 
-
 const registerController = async (req, res, next) => {
   // input check
   try {
@@ -38,11 +37,18 @@ const registerController = async (req, res, next) => {
   res.json({ message: "register successful" })
 }
 
+// input model for user login
+const UserLoginModel = z.object({
+  email: z.email({ message: "Invalid email" }),
+  password: z.string().min(4, { message: "Password must be at least 8 characters long" })
+});
+
 const loginController = async (req, res, next) => {
-  // validate input
-  if (!req.body.email || !req.body.password) {
+  const result = await UserLoginModel.safeParseAsync(req.body);
+  if (!result.success) {
     res.statusCode = 400
-    return res.json({ error: "input is not valid" })
+    const msg = z.prettifyError(result.error);
+    return res.json({ error: msg })
   }
 
   // find user in DB
