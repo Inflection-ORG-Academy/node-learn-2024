@@ -1,12 +1,13 @@
 import nodemailer from 'nodemailer'
+import 'dotenv/config'
 
 // Looking to send emails in production? Check out our Email API/SMTP product!
 var transport = nodemailer.createTransport({
-  host: "sandbox.smtp.mailtrap.io",
-  port: 2525,
+  host: process.env.EMAIL_HOST,
+  port: process.env.EMAIL_PORT,
   auth: {
-    user: "5f1d9a0a20dc05",
-    pass: "9ae638291f44b5"
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS
   }
 });
 
