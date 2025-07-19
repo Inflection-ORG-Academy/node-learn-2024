@@ -11,7 +11,7 @@ var transport = nodemailer.createTransport({
 });
 
 const sendEmail = async (to, subject, body) => {
-  const info = await transport.sendMail({
+  await transport.sendMail({
     from: 'Apple Server <a@apple.com>',
     to,
     subject,
