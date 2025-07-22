@@ -72,9 +72,9 @@ const loginController = async (req, res, next) => {
     return res.json({ error: "password is wrong" })
   }
 
-  const token = jwt.sign({ name: user.name, email: user.email }, process.env.TOKEN_SECRET, { expiresIn: '1h' });
+  const token = jwt.sign({ name: user.name, email: user.email, role: user.role }, process.env.TOKEN_SECRET, { expiresIn: '1h' });
 
-  res.json({ token, name: user.name, email: user.email })
+  res.json({ token, name: user.name, email: user.email, role: user.role })
 }
 
 const forgotPasswordController = async (req, res, next) => {
@@ -139,4 +139,8 @@ const resetPasswordController = async (req, res, next) => {
   res.json({ message: "password reset successful" })
 }
 
-export { registerController, loginController, forgotPasswordController, resetPasswordController }
+const getAllUsers = async (req, res, next) => {
+  res.json({ message: "get all user not implemented" })
+}
+
+export { registerController, loginController, forgotPasswordController, resetPasswordController, getAllUsers }
