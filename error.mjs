@@ -9,6 +9,17 @@ const errorController = (err, req, res, next) => {
   }
 }
 
+// const catchController = (fn) => {
+//   return async (req, res, next) => {
+//     try {
+//       await fn()
+//     } catch (e) {
+//       res.statusCode = e.statusCode
+//       res.json({ error: e.message })
+//     }
+//   }
+// }
+
 const undefinedRouteHandler = (req, res) => {
   res.json({ message: 'wrong route' });
 }
