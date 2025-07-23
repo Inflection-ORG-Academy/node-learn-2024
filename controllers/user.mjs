@@ -66,6 +66,7 @@ const loginController = async (req, res, next) => {
     throw new ServerError(400, "password is wrong")
   }
 
+  const token = jwt.sign({ name: user.name, email: user.email, role: user.role }, process.env.TOKEN_SECRET)
 
   res.json({ token, name: user.name, email: user.email, role: user.role })
 }
@@ -96,7 +97,6 @@ const forgotPasswordController = async (req, res, next) => {
 
   res.json({ message: "email sent check your email" })
 }
-
 
 const resetPasswordController = async (req, res, next) => {
   const users = await prisma.user.findMany({
