@@ -6,6 +6,7 @@ import * as z from 'zod'
 import { sendEmail } from '../email.mjs'
 import Randomstring from 'randomstring'
 import dayjs from 'dayjs'
+import { ServerError } from '../error.mjs'
 
 // input model for user registration
 const UserModel = z.object({
@@ -19,13 +20,9 @@ const registerController = async (req, res, next) => {
   try {
     await UserModel.parseAsync(req.body);
   } catch (e) {
-    res.statusCode = 400
     const msg = z.prettifyError(e);
-    return res.json({ error: msg })
+    throw new ServerError(400, msg)
   }
-
-  // hash password of user
-  const newHashedPassword = await bcrypt.hash(req.body.password, 10)
 
   // add user in DB
   await prisma.user.create({
@@ -49,9 +46,8 @@ const UserLoginModel = z.object({
 const loginController = async (req, res, next) => {
   const result = await UserLoginModel.safeParseAsync(req.body);
   if (!result.success) {
-    res.statusCode = 400
     const msg = z.prettifyError(result.error);
-    return res.json({ error: msg })
+    throw new ServerError(400, msg)
   }
 
   // find user in DB
@@ -61,18 +57,15 @@ const loginController = async (req, res, next) => {
     },
   })
   if (!user) {
-    res.statusCode = 404
-    return res.json({ error: "user DNE" })
+    throw new ServerError(404, "user DNE")
   }
 
   // match password
   const isOk = await bcrypt.compare(req.body.password, user.password)
   if (!isOk) {
-    res.statusCode = 400
-    return res.json({ error: "password is wrong" })
+    throw new ServerError(400, "password is wrong")
   }
 
-  const token = jwt.sign({ name: user.name, email: user.email, role: user.role }, process.env.TOKEN_SECRET, { expiresIn: '1h' });
 
   res.json({ token, name: user.name, email: user.email, role: user.role })
 }
@@ -85,8 +78,7 @@ const forgotPasswordController = async (req, res, next) => {
   })
 
   if (!user) {
-    res.statusCode = 404
-    return res.json({ error: "user DNE" })
+    throw new ServerError(404, "user DNE")
   }
 
   const token = Randomstring.generate()
@@ -114,16 +106,14 @@ const resetPasswordController = async (req, res, next) => {
   })
 
   if (!users.length) {
-    res.statusCode = 404
-    return res.json({ message: "invalid reset link" })
+    throw new ServerError(400, "invalid reset link")
   }
 
   const user = users[0]
 
   const subTime = dayjs().subtract(process.env.RESET_LINK_EXPIRY_TIME_IN_MINUTES, 'minute')
   if (dayjs(subTime).isAfter(dayjs(user.resetTokenExpiry))) {
-    res.statusCode = 400
-    return res.json({ message: "link is expired!!! try forgot password again" })
+    throw new ServerError(400, "link is expired!!! try forgot password again")
   }
 
   const hasedPassword = await bcrypt.hash(req.body.password, 10)
